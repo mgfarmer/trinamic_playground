@@ -14,16 +14,14 @@ void resetMotorDrivers(uint8 motor);
 
 void waitFor(int position, int error) {
 	int pos = tmc5160_readInt(MOTOR0, TMC5160_XACTUAL);
-	int pos1 = position - error;
-	int pos2 = position + error;
-	while (pos < pos1 || pos > pos2)
+	while (pos != position)
 	{
-		delay(100);
+		//delay(100);
 		pos = tmc5160_readInt(MOTOR0, TMC5160_XACTUAL);
 	}
-	delay(100);
 	printf("TMC5160 Position: %d\n", tmc5160_readInt(MOTOR0, TMC5160_XACTUAL));
 }
+
 
 int main(int argc, char **argv) {
 	if (!bcm2835_init())
