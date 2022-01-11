@@ -10,7 +10,7 @@ LDFLAGS			+= -lbcm2835
 LDFLAGS			+= -lwiringPi
 
 # define the C source files
-SRCS				+= main.c
+SRCS				+= trinamic_pg.c
 SRCS				+= SPI_TMC.c
 # used functions from TMC_API
 SRCS				+= TMC-API/tmc/helpers/Debug.c
