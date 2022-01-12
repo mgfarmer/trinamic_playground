@@ -62,6 +62,7 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 
 .PHONY: clean
 
+all: bin/TMCAPI_EXAMPLE bin/trinamic_pg.so
 clean:
 	$(RM) -r $(BUILD_DIR) *.o trinamic_pg_wrap.c
 
