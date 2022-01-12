@@ -4,7 +4,7 @@ CC = gcc
 CXX = g++
 
 # C Fags
-CFLAGS			+= -Wall 
+CFLAGS			+= -fpic
 CFLAGS			+= -g
 LDFLAGS			+= -lbcm2835 
 LDFLAGS			+= -lwiringPi
@@ -35,29 +35,35 @@ SRCS 			+= TMC-API/tmc/ic/TMC5160/TMC5160.c
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
+$(BUILD_DIR)/trinamic_pg.so: swig $(OBJS) bin/trinamic_pg_wrap.c.o
+	$(LD) -shared $(OBJS) bin/trinamic_pg_wrap.c.o -o $@ $(LDFLAGS)
+
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
 
 # assembly
 $(BUILD_DIR)/%.s.o: %.s
 	$(MKDIR_P) $(dir $@)
 	$(AS) $(ASFLAGS) -c $< -o $@ $(LDFLAGS)
 
+swig:
+	swig -python -py3 trinamic_pg.i
+
 # c source
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -I /usr/include/python3.7 -c $< -o $@ $(LDFLAGS)
 
 # c++ source
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ $(LDFLAGS)
 
-
 .PHONY: clean
 
 clean:
-	$(RM) -r $(BUILD_DIR)
+	$(RM) -r $(BUILD_DIR) *.o trinamic_pg_wrap.c
 
 -include $(DEPS)
 
