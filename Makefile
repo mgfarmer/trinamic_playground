@@ -35,12 +35,16 @@ SRCS 			+= TMC-API/tmc/ic/TMC5160/TMC5160.c
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
+.PHONY: clean all
+
+all: bin/TMCAPI_EXAMPLE bin/trinamic_pg.so
+
 $(BUILD_DIR)/trinamic_pg.so: swig $(OBJS) bin/trinamic_pg_wrap.c.o
 	$(LD) -shared $(OBJS) bin/trinamic_pg_wrap.c.o -o $@ $(LDFLAGS)
+	cp $@ _trinamic_pg.so
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
-
 
 # assembly
 $(BUILD_DIR)/%.s.o: %.s
@@ -60,9 +64,8 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ $(LDFLAGS)
 
-.PHONY: clean
 
-all: bin/TMCAPI_EXAMPLE bin/trinamic_pg.so
+
 clean:
 	$(RM) -r $(BUILD_DIR) *.o trinamic_pg_wrap.c
 
