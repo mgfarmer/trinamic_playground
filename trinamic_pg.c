@@ -81,14 +81,15 @@ void configureMotor(char motor) {
 	tmc5160_writeInt(motor, TMC5160_TPWMTHRS, 0x000001F4);
 }
 
-int vstart = 1;
-int a1 = MAX_ACC;
-int v1 = 26843 ;
-int amax = MAX_ACC;
-int vmax = MAX_VEL;
-int dmax = MAX_ACC;
-int d1 = MAX_ACC;
+int vstart = 0;
+int a1 = 100;
+int v1 = 100 ;
+int amax = 1000;
+int vmax = 3000;
+int dmax = 4700;
+int d1 = 1400;
 int vstop = 10;
+float revs = 0.5;
 
 void initMotorParams(char motor)
 {
@@ -141,6 +142,16 @@ void resetMotorDrivers(char motor)
 	}
 }
 
+int tune_max_speed() {
+	if (setupGpio() == 1)
+	{
+		return 1;
+	}
+	configureMotor(MOTOR0);
+
+	initMotorParams(MOTOR0);
+}
+
 int run_example()
 {
 	if (setupGpio() == 1) {
@@ -152,14 +163,14 @@ int run_example()
 
 	//waitFor(0, 10);
 
-	int targetPos = 5 * 51200;
+	int targetPos = (int)(revs * 51200.0);
 	gotoTarget(MOTOR0, targetPos, 1);
 	printf("TMC5160 Position: %d\n", tmc5160_readInt(MOTOR0, TMC5160_XACTUAL));
 
 	delay(500);
 
-	gotoTarget(MOTOR0, 0, 1);
-	printf("TMC5160 Position: %d\n", tmc5160_readInt(MOTOR0, TMC5160_XACTUAL));
+	//gotoTarget(MOTOR0, 0, 1);
+	//printf("TMC5160 Position: %d\n", tmc5160_readInt(MOTOR0, TMC5160_XACTUAL));
 
 	disableMotorPower();
 
